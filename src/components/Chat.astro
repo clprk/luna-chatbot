@@ -89,6 +89,7 @@ export const prerender = false;
       "sympathy",
       "anger",
       "fear",
+      "listening",
     ];
 
     const inputs = luna.stateMachineInputs("Animation State Machine");
@@ -166,7 +167,11 @@ export const prerender = false;
       console.log(response);
       return await response.json();
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Uh oh,", error);
+      const emotionElement = document.getElementById("emotion");
+      if (emotionElement) {
+        emotionElement.textContent = "sympathy";
+      }
       return {
         choices: [
           {
