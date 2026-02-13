@@ -5,23 +5,27 @@ export const prerender = false;
 <!-- Animation half -->
 <div
   id="left"
-  class="fixed top-10 left-0 lg:relative lg:mb-40 w-full h-1/2 lg:w-1/2 lg:h-full flex justify-center items-center overflow-hidden z-0">
+  class="fixed top-10 left-0 lg:relative lg:mb-40 w-full h-1/2 lg:w-1/2 lg:h-full flex justify-center items-center overflow-hidden z-0"
+>
   <canvas id="canvas" width="730" height="730"></canvas>
 </div>
 
 <!-- Messaging half -->
 <div
   id="right"
-  class="fixed bottom-0 left-0 w-full h-1/2 lg:relative lg:w-1/2 lg:h-full flex justify-center items-end">
+  class="fixed bottom-0 left-0 w-full h-1/2 lg:relative lg:w-1/2 lg:h-full flex justify-center items-end"
+>
   <div class="flex flex-col h-full w-full pb-16 lg:pb-8">
     <p id="emotion" class="hidden"></p>
     <div
       id="history"
-      class="flex flex-col overflow-y-auto max-h-[calc(50vh-6rem)] lg:max-h-[calc(100vh-8rem)] px-4 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-thumb]:bg-neutral-400">
+      class="flex flex-col overflow-y-auto max-h-[calc(50vh-6rem)] lg:max-h-[calc(100vh-8rem)] px-4 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-thumb]:bg-neutral-400"
+    >
     </div>
     <div
       id="message-form"
-      class="flex mt-auto items-center mx-4 border border-black dark:border-off-white border-2 rounded-full focus-within:outline focus-within:outline-2 focus-within:outline-purple-100">
+      class="flex mt-auto items-center mx-4 border border-black dark:border-off-white border-2 rounded-full focus-within:outline focus-within:outline-2 focus-within:outline-purple-100"
+    >
       <label for="user-input" class="sr-only">Message Luna</label>
       <textarea
         id="user-input"
@@ -33,7 +37,8 @@ export const prerender = false;
       <button
         id="submit-button"
         class="dark:text-off-white rounded-full m-2 focus-within:outline focus-within:outline-2 focus-within:outline-purple-100 hover:bg-purple-100"
-        type="submit">
+        type="submit"
+      >
         <span class="sr-only">Submit</span>
         <svg
           width="40"
@@ -41,7 +46,8 @@ export const prerender = false;
           viewBox="0 0 24 24"
           fill="none"
           aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg">
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             fill-rule="evenodd"
             clip-rule="evenodd"
@@ -71,34 +77,32 @@ export const prerender = false;
 
   // Function to update the animation based on the current emotion
   function updateAnimation() {
-    console.log("updating...");
     const emotionElement = document.getElementById("emotion");
-    if (emotionElement && emotionElement.textContent) {
-      const emotion = emotionElement.textContent.toLowerCase();
-      console.log("updated to", emotion);
-      const emotionList = [
-        "happiness",
-        "sadness",
-        "excitement",
-        "sympathy",
-        "anger",
-        "fear",
-      ];
-      let animationName = "neutral";
-      // if emotion is one in the possible set, fire it
-      if (emotion in emotionList) {
-        console.log("in list!");
-        animationName = emotion;
-      }
-      // else fire neutral
-      const inputs = luna.stateMachineInputs("Animation State Machine");
-      const animation = inputs.find((i) => i.name === emotion);
-      if (animation) {
-        animation.fire();
-      } else {
-        const animation = inputs.find((i) => i.name === "sympathy");
-        animation.fire();
-      }
+    if (!emotionElement?.textContent) return;
+
+    const emotion = emotionElement.textContent.toLowerCase();
+
+    const emotionList = [
+      "happiness",
+      "sadness",
+      "excitement",
+      "sympathy",
+      "anger",
+      "fear",
+    ];
+
+    const inputs = luna.stateMachineInputs("Animation State Machine");
+
+    // default animation
+    let animationName = "sympathy";
+    if (emotionList.includes(emotion)) {
+      console.log("emotion in list!");
+      animationName = emotion;
+    }
+
+    const trigger = inputs.find((i) => i.name === animationName);
+    if (trigger) {
+      trigger.fire();
     }
   }
 
@@ -116,7 +120,7 @@ export const prerender = false;
   const userInput = document.getElementById("user-input");
 
   userInput.addEventListener("click", function (event) {
-    console.log("typing");
+    //console.log("typing");
     const emotionElement = document.getElementById("emotion");
     if (emotionElement) {
       emotionElement.textContent = "listening";
@@ -124,7 +128,7 @@ export const prerender = false;
   });
 
   userInput.addEventListener("input", function (event) {
-    console.log("typing");
+    //console.log("typing");
     const emotionElement = document.getElementById("emotion");
     if (emotionElement) {
       emotionElement.textContent = "listening";
@@ -141,7 +145,7 @@ export const prerender = false;
     {
       role: "system",
       content:
-        "You are Luna, a cool virtual support companion. Use cognitive behavioral therapy (CBT) techniques when helpful. For each response, select the most fitting emotion from: anger, sympathy, fear, happiness, sadness, or excitement, and include it in parentheses at the beginning (e.g., '(happiness)'). Be helpful in as few words as possible.",
+        "You are Luna, a cool virtual support companion. Use cognitive behavioral therapy (CBT) techniques when helpful. Be supportive and concise. For EVERY response: Select exactly ONE emotion from this list: anger, sympathy, fear, happiness, sadness, excitement. ALWAYS format the response exactly as: (emotion) message text",
     },
   ];
 
@@ -159,7 +163,7 @@ export const prerender = false;
       if (!response.ok) {
         throw new Error("Failed to fetch data");
       }
-
+      console.log(response);
       return await response.json();
     } catch (error) {
       console.error("Error:", error);
@@ -215,7 +219,7 @@ export const prerender = false;
         "border-2",
         "self-end",
         "text-black",
-        "dark:text-off-white"
+        "dark:text-off-white",
       );
       messageDiv.textContent = content;
     } else if (role === "assistant") {
@@ -224,7 +228,7 @@ export const prerender = false;
         "dark:bg-off-white",
         "self-start",
         "text-off-white",
-        "dark:text-gray-800"
+        "dark:text-gray-800",
       );
       // For assistant messages, start empty
       messageDiv.innerHTML = "";
