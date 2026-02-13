@@ -8,7 +8,7 @@ async function getGroqChatCompletion(chatHistory, apiKey) {
   try {
     return await groq.chat.completions.create({
       messages: chatHistory,
-      model: "llama3-70b-8192",
+      model: "llama-3.3-70b-versatile",
     });
   } catch (error) {
     console.error("Error:", error);
